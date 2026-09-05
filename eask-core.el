@@ -721,8 +721,12 @@ This flag allows you to run through operations without reporting errors."
     (if (<= len 1) form-1 form-2)))
 
 (defun eask-current-time ()
-  "Return current time."
-  (let ((now (current-time))) (logior (ash (car now) 16) (cadr now))))
+  "Return current time, as a count of seconds since the epoch."
+  ;; Don't take `current-time' apart by hand: its representation depends on
+  ;; `current-time-list', which defaults to nil as of Emacs 32 and then yields
+  ;; a (TICKS . HZ) pair rather than a (HIGH LOW USEC PSEC) list.  `float-time'
+  ;; accepts either form and exists in every Emacs version Eask supports.
+  (floor (float-time)))
 
 (defun eask-seq-str-max (sequence)
   "Return max length in SEQUENCE of strings."
